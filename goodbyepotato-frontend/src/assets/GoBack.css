@@ -1,0 +1,34 @@
+.shopgoback {
+  top: 4.5%;
+  left: 990px;
+  position: absolute;
+  z-index: 10;
+}
+
+.goback {
+  top: 5%;
+  left: 840px;
+  position: absolute;
+  z-index: 10;
+}
+
+.Systemgoback {
+  top: 6%;
+  left: 440px;
+  position: absolute;
+  z-index: 1;
+}
+
+.reportGoback {
+  top: 3.5%;
+  right: 7%;
+  position: absolute;
+  z-index: 10;
+}
+
+.reportGoback2 {
+  top: 3.5%;
+  right: 7%;
+  position: absolute;
+  z-index: 13;
+}
