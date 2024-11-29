@@ -1,0 +1,55 @@
+﻿@model IEnumerable<_AccessoriesViewModel>
+
+<table class="table table-striped jambo_table bulk_action" id="productsTable">
+    <thead>
+        <tr>
+            <th><i class="fas fa-tshirt"></i>&nbsp;商品名稱</th>
+            <th><i class="fas fa-stream"></i>&nbsp;商品類別</th>
+            <th><i class="fas fa-sort-amount-up"></i>&nbsp;商品等級</th>
+            <th><i class="fas fa-clock"></i>&nbsp;商品有效性</th>
+            <th><i class="fa-regular fa-circle-check"></i>&nbsp;複核狀態</th>
+            @if (User.IsInRole("Admin") || User.IsInRole("PermiGuard"))
+            {
+                <th><i class="fas fa-wrench"></i>&nbsp;操作介面</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="odd pointer">
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.PCode">@item.PName</a>
+                </td>
+                <td>@item.PClass</td>
+                <td>@item.PLevel</td>
+                <td>@item.PActiveDisplay</td>
+                <td>@item.PReviewStatus</td>
+                @if (User.IsInRole("Admin") || User.IsInRole("PermiGuard"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.PCode" class="btn btn-info">編輯</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- 新增顯示資料筆數的部分 -->
+<div class="row">
+    <div class="col-md-12" id="paginationContainer">
+        <p>資料筆數: @ViewBag.TotalItems</p>
+        <nav>
+            <ul class="pagination">
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="pagebtn" href="javascript:void(0);" onclick="loadPage(@i)">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+

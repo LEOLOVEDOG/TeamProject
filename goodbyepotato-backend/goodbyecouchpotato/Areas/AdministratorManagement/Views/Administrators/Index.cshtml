@@ -1,0 +1,116 @@
+﻿@model List<AdminViewModel>
+
+<h1>用戶權限管理</h1>
+
+<div class="container">
+    <div class="row">
+        <hr />
+
+        <div class="col-12 col-md-3">
+            <h5><i class="fas fa-search"></i>&nbsp;搜尋用戶</h5>
+            <hr />
+            <form>
+                <div class="form-group">
+                    <label for="nameSearch" class="control-label">用戶名稱</label>
+                    <input type="text" id="nameSearch" class="form-control" placeholder="搜尋用戶名稱">
+                </div>
+                <div class="form-group">
+                    <label for="roleSearch" class="control-label">當前角色</label>
+                    <select id="roleSearch" class="form-control" >
+                        <option value="">---請選擇---</option>
+                        <option value="PermiGuard">PermiGuard</option>
+                        <option value="User">User</option>
+                    </select>
+                </div>
+            </form>
+            <hr />
+            <div class="d-grid">
+                <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn btn-info">新增使用者</a>
+            </div>
+         </div>
+
+        <div class="col-12 col-md-9">
+            <div id="AdminListContainer">
+                @Html.Partial("_AdminListPartial", Model) <!-- 預加載頁面的部分 -->
+            </div>
+            <div>
+                <nav>
+                    <ul class="pagination">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="javascript:void(0);" onclick="loadPage(@i)">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/sweetalert.js"></script>
+    <script>
+        $(document).ready(function () {
+            var messagetype = '@TempData["Register"]' != "" ? '@TempData["Register"]' : null;
+            if (messagetype != null) {
+                sweetalert(messagetype);
+            };
+
+            var messagetype = '@TempData["IdentityRoles"]' != "" ? '@TempData["IdentityRoles"]' : null;
+            if (messagetype != null) {
+                sweetalertroles(messagetype);
+            };
+        });
+
+            function loadPage(pageNumber) {
+                $.ajax({
+                    url: '@Url.Action("GetAdminListPartial", "Administrators")',
+                    type: 'GET',
+                    data: { page: pageNumber },
+                    success: function (result) {
+                        $('#AdminListContainer').html(result);
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 401) {
+                            // 如果收到未授權（401），重定向到登入頁面
+                            window.location.href = '@Url.Page("/Login", new { area = "Identity" })';
+                        } else {
+                            alert('Error loading data!');
+                        }
+                    }
+                });
+                }
+
+            // 頁面加載後立即加載局部視圖
+            $(document).ready(function () {
+                loadAdminList();
+                });
+
+        $(document).ready(function () {
+            // 用戶名稱搜尋
+            $('#nameSearch').on('keyup', function () {
+                var value = $(this).val().toLowerCase();
+                $('#adminTable tbody tr').filter(function () {
+                    $(this).toggle($(this).find('td:first').text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // 當前角色搜尋
+            $('#roleSearch').on('change', function () {
+                var value = $(this).val().toLowerCase();
+                $('#adminTable tbody tr').filter(function () {
+                    $(this).toggle($(this).find('td:nth-child(2)').text().toLowerCase().indexOf(value) > -1 || value === "");
+                });
+            });
+        });
+    </script>
+}
+
+
+
+
+
+

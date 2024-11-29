@@ -1,0 +1,132 @@
+﻿@model IEnumerable<_AccessoriesViewModel>
+
+<h1>商品管理</h1>
+<div class="container">
+    <div class="row">
+        <hr />
+        <div class="col-12 col-md-3">
+            <h5><i class="fas fa-search"></i>&nbsp;搜尋商品</h5>
+            <form>
+                <div class="form-group">
+                    <label for="nameSearch" class="control-label">商品名稱</label>
+                    <input type="text" id="nameSearch" class="form-control" placeholder="搜尋商品名稱">
+                </div>
+                <div class="form-group">
+                    <label for="classSearch" class="control-label">商品類別</label>
+                    <select id="classSearch" class="form-control">
+                        <option value="">---請選擇---</option>
+                        <option value="髮型">髮型</option>
+                        <option value="衣服">衣服</option>
+                        <option value="飾品">飾品</option>
+@*                          <option value="家具">家具</option> *@
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="levelSearch" class="control-label">商品等級</label>
+                    <input type="text" id="levelSearch" class="form-control" autocomplete="off" placeholder="搜尋等級" min="0">
+                </div>
+                <!-- Active 搜尋欄位 -->
+                <div class="form-group">
+                    <label for="activeSearch" class="control-label">商品有效性</label>
+                    <select id="activeSearch" class="form-control">
+                        <option value="">---請選擇---</option>
+                        <option value="inactive">未啟用</option>
+                        <option value="active">已啟用</option>
+                    </select>
+                </div>
+
+                <!-- Status 搜尋欄位 -->
+                <div class="form-group">
+                    <label for="statusSearch" class="control-label">複核狀態</label>
+                    <select id="statusSearch" class="form-control">
+                        <option value="">---請選擇---</option>
+                        <option value="未通過">未通過</option>
+                        <option value="通過">通過</option>
+                        <option value="待複核">待複核</option>
+                    </select>
+                </div>
+            </form>
+            <hr />
+            <div class="d-grid">
+                <a asp-action="Create" class="btn btn-info" type="button">新增商品</a>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-9">
+            <div id="AccessoriesListContainer">
+                <!-- 這裡會顯示局部視圖內容 -->
+                @Html.Partial("_AccessoriesListPartial", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/sweetalert.js"></script>
+    <script>
+        $(document).ready(function () {
+            var messagetype = '@TempData["CreateProduct"] ' != "" ? '@TempData["CreateProduct"]': null;
+            if (messagetype != null) {
+                sweetalert(messagetype);
+            };
+            var messagetype = '@TempData["EditProduct"] ' != "" ? '@TempData["EditProduct"]' : null;
+            if (messagetype != null) {
+                sweetalertedit(messagetype);
+            };
+        });
+
+
+        function loadPage(pageNumber) {
+            var searchName = $('#nameSearch').val();
+            var searchClass = $('#classSearch').val();
+            var searchLevel = $('#levelSearch').val();
+            var searchActive = $('#activeSearch').val();  
+            var searchStatus = $('#statusSearch').val();  
+
+            $.ajax({
+                url: '@Url.Action("Search", "AccessoriesLists")',
+                type: 'GET',
+                data: {
+                    page: pageNumber,
+                    searchName: searchName,
+                    searchClass: searchClass,
+                    searchLevel: searchLevel,
+                    searchActive: searchActive,  
+                    searchStatus: searchStatus,  
+                },
+                success: function (result) {
+                    // 更新商品列表區域
+                    $('#AccessoriesListContainer').html(result);
+                },
+                error: function () {
+                    alert('Error loading data!');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // 商品名稱搜尋
+            $('#nameSearch').on('keyup', function () {
+                loadPage(1); // 搜尋後重置到第 1 頁
+            });
+
+            // 商品類別搜尋
+            $('#classSearch').on('change', function () {
+                loadPage(1); // 搜尋後重置到第 1 頁
+            });
+
+            // 商品等級搜尋
+            $('#levelSearch').on('input', function () {
+                loadPage(1); // 搜尋後重置到第 1 頁
+            });
+
+            $('#activeSearch').on('change', function () {
+                loadPage(1); // 搜尋後重置到第 1 頁
+            });
+
+            $('#statusSearch').on('change', function () {
+                loadPage(1); // 搜尋後重置到第 1 頁
+            });
+        });
+    </script>
+}

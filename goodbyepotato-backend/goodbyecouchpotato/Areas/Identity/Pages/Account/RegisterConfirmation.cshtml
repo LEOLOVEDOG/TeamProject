@@ -1,0 +1,22 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "註冊結果";
+}
+
+<h1>@ViewData["Title"]</h1>
+@{
+    if (@Model.DisplayConfirmAccountLink)
+    {
+<p>
+    註冊成功，帳號已啟用。
+</p>
+    }
+    else
+    {
+<p>
+        註冊失敗，請重新確認資料是否正確。
+</p>
+    }
+}
+

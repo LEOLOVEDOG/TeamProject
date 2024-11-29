@@ -1,0 +1,78 @@
+﻿@model _SearchViewModel
+
+@* @{
+    ViewData["Title"] = "Create";
+} *@
+
+<h1>新增任務</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4 formcenter">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TaskName" class="control-label">@Html.DisplayNameFor(Model => Model.TaskName)</label>
+                <input asp-for="TaskName" class="form-control" />
+                <span asp-validation-for="TaskName" class="text-danger"></span>
+                <div class="samename text-danger">已有相同的任務內容</div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reward" class="control-label">@Html.DisplayNameFor(Model => Model.Reward)</label>
+                <input type="number" asp-for="Reward" min="5" step="5" class="form-control" id="rewardcoin" />
+                <span id="notify" class="text-danger"></span>
+                <span asp-validation-for="Reward" class="text-danger" id="oldnotify"></span>
+            </div>
+            <div class="hidden">
+                <input type="hidden" asp-for="TaskActive" value="false" />
+                <input type="hidden" asp-for="TReviewStatus" value="待複核" />
+            </div>
+            <div class="form-group">
+                <button id="createbutton" type="submit" value="Create" class="btn btn-info" >新增</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">返回任務列表</a>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.samename').hide();
+            $('#rewardcoin').on('keyup', function () {
+                var value = $(this).val();
+                if (value % 5 !== 0) {
+                    $('#notify').html("必須以5的倍數，輸入5到30之間的數字");
+                    $('#oldnotify').hide();
+                } else {
+                    $('#notify').html(""); // 清除錯誤訊息
+                    $('#oldnotify').show();
+                }
+            });
+
+
+            // 驗證任務名稱
+            function validateTaskName() {
+                var value = $('#TaskName').val();
+                $.ajax({
+                    type: "POST",
+                    url: "/TaskManagement/DailyTasks/GetTaskName",
+                    data: { taskname: value },
+                }).done(data => {
+                    if (data.message) {
+                        $('.samename').show();
+                        $('#createbutton').prop('disabled', true);
+                    } else {
+                        $('.samename').hide();
+                        $('#createbutton').prop('disabled', false);
+                    }
+                });
+            }
+
+            $('#TaskName').on('keyup focus', validateTaskName);
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

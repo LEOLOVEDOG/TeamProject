@@ -1,0 +1,155 @@
+﻿@model _AccessoriesViewModel
+
+ @* @{
+     ViewData["Title"] = "Create";
+ } *@
+
+<h1>新增商品</h1>
+
+<hr />
+<div class="row" >
+    <div class="col-md-4 formcenter">
+        <form asp-area="ProductManagement" asp-controller="AccessoriesLists" asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+@*                 <label asp-for="PCode" class="control-label">@Html.DisplayNameFor(m=>m.PCode)</label> *@
+                <input asp-for="PCode" type="text" class="form-control" autocomplete="off" readonly hidden />
+@*                 <span asp-validation-for="PCode" class="text-danger"></span> *@
+            </div>
+            <div class="form-group">
+                <label asp-for="PClass" class="control-label">@Html.DisplayNameFor(m => m.PClass)</label>
+                <select asp-for="PClass" class="form-control form-select" aria-label="Default select example">
+                    <option selected>請選擇商品類別</option>
+                    <option value="髮型">髮型</option>
+                    <option value="衣服">衣服</option>
+                    <option value="飾品">飾品</option>
+@*                     <option value="家具">家具</option> *@
+                </select>
+                <span asp-validation-for="PClass" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PName" class="control-label">@Html.DisplayNameFor(m => m.PName)</label>
+                <input asp-for="PName" class="form-control" />
+                <span asp-validation-for="PName" class="text-danger" id="name"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PPrice" class="control-label">@Html.DisplayNameFor(m => m.PPrice)</label>
+                <input asp-for="PPrice" type="text" class="form-control" autocomplete="off" min="280" step="5" id="inputprice" />
+                <span id="pricenotify" class="text-danger"></span>
+                 <span asp-validation-for="PPrice" class="text-danger" id="oldpriceontify"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PLevel" class="control-label">@Html.DisplayNameFor(m => m.PLevel)</label>
+                <input asp-for="PLevel" type="text" class="form-control" autocomplete="off" min="0" id="inputlevel" />
+                <span id="levelnotify" class="text-danger"></span>
+                <span asp-validation-for="PLevel" class="text-danger" id="oldlevelnotify"></span>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label asp-for="PImageShop" class="control-label">@Html.DisplayNameFor(m => m.PImageShop)</label>
+                </div>
+                <img id="imgpreview1"
+                     src="@Url.Content("~/images/NoImage.png")"
+                     style="width:320px;height:240px" title="none"
+                     onclick="viewImage(this)"/>
+                <input asp-for="PImageShop" type="file" accept="image/*" class="form-control" />
+            </div>
+            <div class="form-group">
+                <div>
+                    <label asp-for="PImageAll" class="control-label">@Html.DisplayNameFor(m => m.PImageAll)</label>
+                </div>
+                <img id="imgpreview2"
+                     src="@Url.Content("~/images/NoImage.png")"
+                     style="width:320px;height:240px" title="none"
+                     onclick="viewImage(this)"/>
+                <input asp-for="PImageAll" type="file" accept="image/*" class="form-control" />
+            </div>
+            <input asp-for="PActive" type="hidden" class="form-control" />
+            <input asp-for="PReviewStatus" type="hidden" class="form-control" />
+            <div class="form-group">
+                <input type="submit" value="新增" class="btn btn-info" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--https://bootstrap5.hexschool.com/docs/5.1/components/modal/#live-demo-->
+<!--顯示圖片的區域 --> 
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="modalImage" src="" class="img-fluid" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Index">返回商品列表</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+
+
+               function viewImage(imageElement) {
+            var imageSrc = $(imageElement).attr('src');
+            $('#modalImage').attr('src', imageSrc);
+            $('#imageModal').modal('show');
+        }
+
+        // 圖片預覽
+        $("#PImageShop").on("change", function () {
+            previewImage(this, $("#imgpreview1"));
+        });
+
+        // 圖片預覽
+        $("#PImageAll").on("change", function () {
+            previewImage(this, $("#imgpreview2"));
+        });
+
+
+        $('#inputprice').on('keyup', function () {
+            var value = $(this).val();
+            if (/^\d+$/.test(value)) { // 正則表達查是否為純數字
+
+                if (value >= 280 && value % 5 === 0) {
+                    $('#pricenotify').html(""); 
+                    $('#oldpriceontify').show();
+                } else {
+                    $('#pricenotify').html("必須以5的倍數，輸入大於280或小於10000的數字");
+                    $('#oldpriceontify').hide();
+                }
+            } else {
+                if (value === ""){
+                    $('#pricenotify').html("");
+                    $('#oldpriceontify').show();
+                }else{
+                $('#pricenotify').html("只能輸入數字");
+                $('#oldpriceontify').hide();
+                }
+            }
+        });
+
+        $('#inputlevel').on('keyup', function () {
+            var value = $(this).val();
+            if (/^\d+$/.test(value)) { 
+                $('#levelnotify').html("");
+                $('#oldlevelnotify').show();
+            } else {
+                if (value === "") {
+                    $('#levelnotify').html(""); 
+                    $('#oldlevelnotify').show();
+                } else {
+                    $('#levelnotify').html("只能輸入數字");
+                    $('#oldlevelnotify').hide();
+                }
+            }
+        });
+    </script>
+}

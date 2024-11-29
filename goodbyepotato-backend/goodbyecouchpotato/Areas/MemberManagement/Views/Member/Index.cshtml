@@ -1,0 +1,98 @@
+﻿@model IEnumerable<goodbyecouchpotato.Areas.MemberManagement.ViewModels.MemberViewModel>
+
+@section Styles
+{
+    <link href="~/lib/datatables/css/jquery.datatables.min.css" rel="stylesheet" />
+
+    <style>
+        /* 隱藏 DataTables 預設的搜尋框 */
+        .dataTables_filter {
+            display: none;
+        }
+    </style>
+}
+
+<h1>會員管理</h1>
+<hr>
+<!-- 搜尋框和下拉選單 -->
+<div class="container">
+    <div class="row">
+        <div class="searcharea col-12 col-lg-3">
+            <h5><i class="fas fa-search"></i>會員搜尋</h5>
+            <form asp-controller="Member" asp-action="Search" id="MemberSearchForm">
+                <div class="form-group mt-3">
+                    <label class="control-label" for="searchAccount">帳號</label>
+                    <input type="text" id="searchAccount" class="form-control" autocomplete="off" placeholder="請填寫玩家帳號" />
+                </div>
+                <div class="form-group mt-3">
+                    <label class="control-label" for="searchEmail">信箱</label>
+                    <input type="text" id="searchEmail" class="form-control" autocomplete="off" placeholder="請填寫信箱" />
+                </div>
+                <div class="form-group mt-3">
+                    <label class="control-label" for="searchPlayerstatus">開通狀態</label>
+                    <select id="searchPlayerstatus" class="form-control">
+                        <option value="">－－請選擇－－</option>
+                        <option value="已開通">已開通</option>
+                        <option value="未開通">未開通</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-12 col-lg-9">
+            <table class="table table-striped jambo_table bulk_action" id="memberTable">
+                <thead class="even pointer">
+                    <tr class="odd pointer">
+                        <th><i class="fa-regular fa-user"></i> 帳號</th>
+                        <th><i class="fa-regular fa-envelope"></i> 信箱</th>
+                        <th><i class="fa-regular fa-circle-check"></i> 開通狀態</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/lib/datatables/js/jquery.datatables.min.js"></script>
+    <script src="//cdn.datatables.net/fixedheader/3.3.2/js/dataTables.fixedHeader.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $("#memberTable").DataTable({
+                ajax: {
+                    type: 'GET',
+                    url: "/MemberManagement/Member/IndexJson",
+                    dataSrc: function (json) { return json; }
+                },
+                columns: [
+                    { "data": "account", "width": "10%" },
+                    { "data": "email", "width": "10%" },
+                    { "data": "playerstatus", "width": "10%" },
+                ],
+                fixedHeader: { header: true },
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                }
+            });
+
+            // 自訂搜尋框事件
+            $('#searchAccount').on('keyup', function () {
+                table.column(0).search(this.value).draw();
+            });
+
+            $('#searchEmail').on('keyup', function () {
+                table.column(1).search(this.value).draw();
+            });
+
+            $('#searchCoins').on('keyup', function () {
+                table.column(3).search(this.value).draw();
+            });
+
+            // Playerstatus 下拉選單篩選
+            $('#searchPlayerstatus').on('change', function () {
+                table.column(2).search(this.value).draw();
+            });
+        });
+    </script>
+}

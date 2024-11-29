@@ -1,0 +1,122 @@
+﻿@model _SearchViewModel
+@* 因為要使用在viewmodel的設定，所以這張文件所參考的Model屬性是_SearchViewModel，而不是原始的Model，這樣才可以引用viewmodel的東西
+ *@
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using X.PagedList.Mvc.Core.Fluent
+
+
+ <h1>每日任務管理</h1>
+<div class="container">
+    <div class="row">
+        <hr />
+    <div class="searcharea col-12 col-md-3">
+            <h5><i class="fas fa-search"></i>&nbsp;搜尋任務</h5>
+        <form asp-controller="DailyTasks" asp-action="TaskSearch" id="Searchform">
+            <div class="form-group">
+            <label class="control-label" name="Name">@Html.DisplayNameFor(Model=>Model.TaskName)</label>
+                <input type="text" asp-for="TaskName" class="form-control" autocomplete="off" placeholder="請填寫查詢內容"/>
+            </div>
+            <div class="form-group">
+            <label class="control-label" name="Reward">@Html.DisplayNameFor(Model=>Model.Reward)</label>
+                <input class="form-control" type="text" asp-for="Reward"   autocomplete="off" placeholder="請填寫完整數字"/>
+            </div>
+            <div class="form-group">
+              <label class="control-label" >@Html.DisplayNameFor(Model=>Model.TaskActive)</label>
+                <select id="Active" name="TaskActive" class="form-control">
+                    <option value="">---請選擇---</option>
+                    <option value="true">已啟用</option>
+                    <option value="false">未啟用</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">@Html.DisplayNameFor(Model=>Model.TReviewStatus)</label>
+                <select  class="form-control" id="reviewstatus" name="TReviewStatus">
+                    <option value="">---請選擇---</option>
+                    <option value="未通過">未通過</option>
+                    <option value="通過">通過</option>
+                    <option value="待複核">待複核</option>
+                </select>
+            </div>
+    <hr />
+        <p> <a class="btn btn-info col-12" asp-action="Create">新增任務</a></p>
+        </form>
+    </div>
+
+    <div id="Tasklistarea" class=" col-12 col-md-9">
+
+            <table class="table table-striped jambo_table bulk_action">
+                <thead class="even pointer">
+                    <tr class="odd pointer">
+                        <td><i class="fas fa-tasks"></i>&nbsp;@Html.DisplayNameFor(Model => Model.TaskName)</td>
+                        <td>            <i class="fas fa-dollar-sign"></i>&nbsp;@Html.DisplayNameFor(Model => Model.Reward)</td>
+                        <td><i class="fas fa-clock"></i>&nbsp;@Html.DisplayNameFor(Model => Model.TaskActive)</td>
+                        <td><i class="fa-regular fa-circle-check"></i>&nbsp;@Html.DisplayNameFor(Model => Model.TReviewStatus)</td>
+                        @if (User.IsInRole("Admin") || User.IsInRole("PermiGuard"))
+                      {
+                            <td><i class="fas fa-wrench"></i>&nbsp;操作介面</td>
+                      }
+                    
+                </tr>
+    </thead>
+    <tbody class="list">
+
+    </tbody>
+        </table>
+
+</div>
+</div>
+    </div>
+@section Scripts{
+    <script src="~/js/sweetalert.js"></script>
+        <script>
+            $(document).ready(function () {
+            var messagetype = '@TempData["CreateTask"]' != "" ? '@TempData["CreateTask"]': null;
+            if (messagetype != null) {
+                sweetalert(messagetype);
+            };
+            var messagetype = '@TempData["EditTask"]' != "" ? '@TempData["EditTask"]' : null;
+            if (messagetype != null) {
+                sweetalertedit(messagetype);
+            };
+        });
+
+
+            function partiallist() {  //刷新partial
+            $.ajax({
+                type: 'POST',
+                url: "/TaskManagement/DailyTasks/TaskSearch",
+                data: $('#Searchform').serialize(),
+            }).done(data => { $('.list').html(data); });
+        };
+            
+        $(document).ready(function () {  //剛進入時刷新第一次全部數據
+            partiallist()
+        });
+            $('input').on('keyup', function () { 
+            partiallist()
+            })
+            $('#Active').on('change', function () {
+            partiallist()       
+            })
+            $('#reviewstatus').on('change', function () {
+            partiallist()
+            })
+
+
+        $(document).on('click', '.pagination .page-link', function (e) {  //翻頁的事件
+            e.preventDefault();
+            let page = $(this).data('page'); //取得點擊的頁碼
+            if (page) {
+                $.ajax({
+                    type: 'POST',
+                    url: "/TaskManagement/DailyTasks/TaskSearch",
+                    data: $('#Searchform').serialize() + "&page=" + page,
+                }).done(data => {
+                    $('.list').html(data); // 更新Partial
+                    updatePagination(data.currentpage, data.totalpages); //更新分頁訊息
+                });
+            }
+        });
+        </script>
+}

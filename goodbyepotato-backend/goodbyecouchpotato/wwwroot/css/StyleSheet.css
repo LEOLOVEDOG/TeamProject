@@ -1,0 +1,88 @@
+﻿.btn-info {
+    align-items: center;
+    background-color: #17a2b8;
+    border: 0;
+    border-radius: 100px;
+    box-sizing: border-box;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 20px;
+    max-width: 480px;
+    min-height: 40px;
+    min-width: 0px;
+    overflow: hidden;
+    padding: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+    touch-action: manipulation;
+    transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, box-shadow 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+    user-select: none;
+    -webkit-user-select: none;
+    vertical-align: middle;
+}
+
+    .btn-info:hover,
+    .btn-info:focus {
+        background-color: #10707f;
+        color: #ffffff;
+    }
+
+    .btn-info:active {
+        background: #09223b;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-info:disabled {
+        cursor: not-allowed;
+        background: rgba(0, 0, 0, 0.08);
+        color: rgba(0, 0, 0, 0.3);
+    }
+
+
+.pagebtn {
+    background-color: white; /* 自定义背景色 */
+    color: #445366; /* 自定义字体颜色 */
+    border: 1px solid #445366; /* 边框 */
+    padding: 8px 12px; /* 内边距 */
+    border-radius: 5px; /* 圆角 */
+    text-decoration: none; /* 去掉下划线 */
+    margin: 0 5px; /* 按钮之间的间距 */
+    display: inline-block; /* 让按钮保持内联块样式 */
+}
+
+    .pagebtn:hover {
+        background-color: #5a6d87; /* 悬停时背景色变化 */
+        color: white; /* 悬停时文字颜色 */
+        cursor: pointer; /* 鼠标悬停时显示手形 */
+    }
+.custom-page-item {
+    margin: 0 5px; /* 列表项之间的间距 */
+    display: inline-block; /* 让列表项保持内联块样式 */
+}
+/*給product用的*/
+.pagebtn.active {
+    background-color: #445366;  /*激活状态背景色 */
+    color: white;  /*激活状态字体颜色 */
+}
+
+/*給task用的*/
+ul.pagination .page-item .pagebtn.active {
+    background-color: #445366; /* 激活背景色 */
+    color: white; /* 激活字體顏色 */
+    border: 0px; /*不知道為甚麼會有border 把他強制刪除*/
+}
+
+
+
+/*給opinion用的*/
+li.active .pagebtn,
+.pagebtn.active {
+    background-color: #445366;
+    color: white;
+}
